@@ -1,0 +1,347 @@
+:root {
+    --theme-color-1: #FAFAFA;
+    --theme-color-2: #F2F2F3;
+    --theme-color-3: #D2D2D5;
+    --theme-color-4: rgba(80, 80, 88, 0.3);
+    --theme-color-5: #707070;
+
+    --status-a-1: #F9F5EF;
+    --status-a-2: #F4A825;
+    --status-b-1: #EFF6F4;
+    --status-b-2: #2EB88A;
+    --status-c-1: #F8EFEF;
+    --status-c-2: #DB2424;
+}
+
+/* Geral settings */
+html, body {
+    display: flex;
+    flex-direction: column;
+    
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--theme-color-2);
+
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevents the main page from scrolling */
+}
+
+/* Modal for initial input */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--theme-color-1);
+    padding: 5px 10px 20px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Prevents input from overflowing */
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.login-btn {
+    width: 90%;
+    padding: 10px;
+    background: var(--theme-color-5);
+    color: var(--theme-color-1);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Page structure */
+
+#header {
+    border-bottom: 2px solid var(--theme-color-3);
+    height: 5vh;
+}
+
+#content {
+    display: flex;
+    height: 95vh;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    width: 300px;
+    border-right: 2px solid var(--theme-color-3);
+}
+
+#sidebar-header {
+    height: 80px;
+    flex-shrink: 0;
+    background-color: var(--theme-color-1);
+    border-bottom: 1px solid var(--theme-color-3);
+}
+
+#urls {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+
+    overflow-y: auto;
+    background-color: var(--theme-color-1);
+
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+#sidebar-footer {
+    height: 60px;   
+    flex-shrink: 0;
+    background-color: var(--theme-color-1);
+    border-top: 1px solid var(--theme-color-3);
+}
+
+/* Left pannel url */
+.url {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 8px 5px;
+    margin: 0 0 3px 15px;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+    
+    border-bottom: 1px solid #34495e; 
+    border: 0;
+
+    transition-duration: 150ms;
+}
+
+.url:hover {
+    background-color: var(--theme-color-4);
+}
+
+.status-a {
+    background-color: var(--status-a-1);
+    border: 0px solid var(--status-a-2);
+    border-left-width: 2px;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.status-b {
+    background-color: var(--status-b-1);
+    border: 0px solid var(--status-b-2);
+    border-left-width: 2px;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.status-c {
+    background-color: var(--status-c-1);
+    border: 0px solid var(--status-c-2);
+    border-left-width: 2px;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.selected-url {
+    margin-left: 12px;
+    border-width: 1px 0px 1px 4px;
+}
+
+.status-button {
+    /* 1. Define the size */
+    width: 12px;
+    height: 12px;
+    
+    /* 2. Make it a circle */
+    border-radius: 40%;
+    
+    /* 3. Prevent flexbox from squeezing it */
+    flex-shrink: 0;
+
+    /* 4. Styling */
+    cursor: pointer;
+    border: none;
+}
+
+.status-a .status-button {
+    background-color: var(--status-a-2);
+}
+
+.status-b .status-button {
+    background-color: var(--status-b-2);
+}
+
+.status-c .status-button {
+    background-color: var(--status-c-2);
+}
+
+.http-verb {
+    display: inline-block;
+    width: 35px;
+
+    font-weight: 700;
+    font-size: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    cursor: default;
+}
+
+.http-get {
+    color: #2EB898;
+}
+
+.http-post {
+    color: #F4A825;
+}
+
+.http-put {
+    color: #60A5FA;
+}
+
+.http-patch {
+    color: #60A5FA;
+}
+
+.http-delete {
+    color: #DB2424;
+}
+
+.url-text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    cursor: default;
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responses - Central pannel */
+
+#responses {
+    display: flex;
+    justify-content: center;
+
+    padding: 10px;
+    gap: 10px;
+    width: 100%;
+}
+
+#original-response {
+    flex: 1;
+
+    background-color: var(--theme-color-1);
+    border: 2px solid var(--theme-color-3);
+    border-radius: 5px;
+}
+
+#replay-response {
+    flex: 1;
+    
+    background-color: var(--theme-color-1);
+    border: 2px solid var(--theme-color-3);
+    border-radius: 5px;
+}
+
+/* Central pannel - Responses */
+
+#original-response {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#response-menu {
+    height: 35px;
+    flex-shrink: 0;
+    /* background-color: var(--theme-color-1); */
+    border-bottom: 1px solid var(--theme-color-3);
+}
+
+.response-content {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    
+    overflow-y: auto;
+    background-color: var(--theme-color-1);
+
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+/* JSON */
+.json-line {
+    display: flex;
+    align-items: center;
+    
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    
+    cursor: default;
+}
+
+.depth-0 {
+    padding-left: 10px;
+}
+
+.depth-1 {
+    padding-left: 30px;
+}
+
+.depth-2 {
+    padding-left: 50px;
+}
+
+.response-content div:hover {
+    background-color: var(--theme-color-4);
+}
+
+.key {
+    display: inline-block;
+    width: 100px;
+    color: #BF56E8;
+}
+
+.value {
+    margin-left: 10px;
+    color: #F36047;
+}

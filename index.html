@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Url Monitor</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="initialInput" class="modal-overlay active">
+    <div class="modal-content">
+        <h2>Forneça os identificadores</h2>
+        
+        <input type="text" id="originalInput" placeholder="Original" required>
+        <input type="text" id="replayInput" placeholder="Replay" required>
+        <button type="submit" class="login-btn" onclick="toggleModal()">Confirmar</button>
+    </div>
+    </div>
+
+    <div id="header">a</div>
+    <div id="content">
+        <div id="sidebar">
+            <div id="sidebar-header">b1</div>
+
+            <div id="urls">
+
+                <!-- <div class="url status-a" id="url-0" onclick='selectUrl("url-0")'>
+                    <span class="status-button" onclick='toggleStatus("url-0", "status-a")'></span>
+                    <span class="http-verb http-get">GET</span>
+                    <span class="url-text truncate">abc.intranet.bb.com.br</span>
+                </div>
+
+                <div class="url status-b" id="url-1" onclick='selectUrl("url-1")'>
+                    <span class="status-button"></span>
+                    <span class="http-verb http-post">POST</span>
+                    <span class="url-text">bb.com.br</span>
+                </div>
+
+                <div class="url status-c" id="url-2" onclick='selectUrl("url-2")'>
+                    <span class="status-button"></span>
+                    <span class="http-verb http-put">PUT</span>
+                    <span class="url-text">bb.com.br</span>
+                </div>
+
+                <div class="url status-a" id="url-3" onclick='selectUrl("url-3")'>
+                    <span class="http-verb http-delete">DELETE</span>
+                    <span class="url-text">bb.com.br</span>
+                </div>
+
+                <div class="url status-b" id="url-4" onclick='selectUrl("url-4")'>
+                    <span class="http-verb http-patch">PATCH</span>
+                    <span class="url-text">bb.com.br</span>
+                </div> -->
+
+            </div>
+
+            <div id="sidebar-footer">
+                b3
+            </div>
+        </div>
+        
+        <div id="responses">
+            <div id="original-response">
+                <div class="response-menu">
+                    Original
+                </div>
+                <div class="response-content" id="original-response-content">
+                    <!-- <div class="depth-0 json-line"><span class="key">city</span></div>
+                    <div class="depth-1 json-line"><span class="key">code</span><span class="value">goiania</span></div>
+                    <div class="depth-1 json-line"><span class="key">name</span><span class="value">Goiânia</span></div>
+                    <div class="depth-0 json-line"><span class="key">country</span></div>
+                    <div class="depth-1 json-line"><span class="key truncate" title="code_country_country">code_country_country</span><span class="value">BR</span></div>
+                    <div class="depth-1 json-line"><span class="key">name</span><span class="value">Brazil</span></div>
+                    <div class="depth-1 json-line"><span class="key">pt</span><span class="value">Brasil</span></div> -->
+                </div>
+            </div>
+
+            <div id="replay-response">
+                <div class="response-menu">Replay</div>
+                <div class="response-content" id="replay-response-content">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>
