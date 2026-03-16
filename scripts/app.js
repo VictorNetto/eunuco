@@ -2,13 +2,11 @@ const socket = new WebSocket('ws://localhost:8765');
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    
-    if (data.type === "timer") {
-        console.log("⏰ Timer update:", data.content);
-        // You could update a clock on your webpage here
-    } else if (data.type === "echo") {
-        console.log("💬 Server acknowledged your message!");
-    }
+    console.log(data);
+
+
+    data["status"] = "status-a";
+    addUrl(data);
 };
 
 function toggleModal() {
@@ -68,10 +66,6 @@ function renderJSON(json, elem, depth) {
     }
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 let responses = {
     original: {},
     replay: {},
@@ -81,14 +75,14 @@ function addUrl(flowData) {
     const url = flowData["url"];
     const method = flowData["method"];
     const status = flowData["status"];
-    const originalResponse = flowData["originalResponse"];
-    const replayResponse = flowData["replayResponse"];
+    const originalResponse = flowData["original-response"];
+    // const replayResponse = flowData["replayResponse"];
     const id = `url-${urlCount}`;
     urlCount += 1;
 
     // Save the responses for later
     responses.original[id] = originalResponse;
-    responses.replay[id] = replayResponse;
+    responses.replay[id] = "";
 
     // Create the container
     const container = document.createElement('div');
@@ -96,11 +90,14 @@ function addUrl(flowData) {
     container.id = id;
     container.setAttribute('onclick', `selectUrl('${id}')`);
 
+    // Remove http or https for a clean url show
+    const clean_url = url.replace(/^https?:\/\//, '');
+
     // Inject the inner HTML
     container.innerHTML = `
         <span class="status-button" onclick='toggleStatus("${id}", "${status}")'></span>
         <span class="http-verb http-${method.toLowerCase()}">${method}</span>
-        <span class="url-text truncate">${url}</span>
+        <span class="url-text truncate" title="${url}">${clean_url}</span>
     `;
 
     // Append the container
