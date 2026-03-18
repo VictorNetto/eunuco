@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Url Monitor</title>
+    <title>Kiko</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -17,15 +17,22 @@
     </div>
     </div>
 
-    <div id="header">a</div>
+    <div id="header"></div>
     <div id="content">
         <div id="sidebar">
-            <div id="sidebar-header">b1</div>
+            <div id="sidebar-header">
+                <span id="not-replayed" class="" onclick="selectNotReplayed()">Não<br>Repetido</span>
+                <span id="same-response" class="" onclick="selectSameResponse()">Respostas<br>Iguais</span>
+                <span id="different-responses" class="" onclick="selectDifferentResponses()">Respostas<br>Diferentes</span>
+
+                <!-- <span class="clean-button selected">Não Repetido</span>
+                <span class="clean-button">Iguais</span>
+                <span class="clean-button">Diferentes</span> -->
+            </div>
 
             <div id="urls">
-
-                <!-- <div class="url status-a" id="url-0" onclick='selectUrl("url-0")'>
-                    <span class="status-button" onclick='toggleStatus("url-0", "status-a")'></span>
+                <div class="url status-a" id="flow-1" onclick='selectUrl("flow-1")'>
+                    <input type="checkbox" class="true-positive-check" checked disabled>
                     <span class="http-verb http-get">GET</span>
                     <span class="url-text truncate">abc.intranet.bb.com.br</span>
                 </div>
@@ -33,24 +40,26 @@
                 <div class="url status-b" id="url-1" onclick='selectUrl("url-1")'>
                     <span class="status-button"></span>
                     <span class="http-verb http-post">POST</span>
-                    <span class="url-text">bb.com.br</span>
+                    <span class="url-text truncate">bb.com.br.adada.fdafa</span>
                 </div>
 
                 <div class="url status-c" id="url-2" onclick='selectUrl("url-2")'>
                     <span class="status-button"></span>
                     <span class="http-verb http-put">PUT</span>
-                    <span class="url-text">bb.com.br</span>
+                    <span class="url-text truncate">bb.com.br</span>
                 </div>
 
                 <div class="url status-a" id="url-3" onclick='selectUrl("url-3")'>
+                    <span class="status-button"></span>
                     <span class="http-verb http-delete">DELETE</span>
-                    <span class="url-text">bb.com.br</span>
+                    <span class="url-text truncate">bb.com.br</span>
                 </div>
 
                 <div class="url status-b" id="url-4" onclick='selectUrl("url-4")'>
+                    <span class="status-button"></span>
                     <span class="http-verb http-patch">PATCH</span>
-                    <span class="url-text">bb.com.br</span>
-                </div> -->
+                    <span class="url-text truncate">bb.com.br</span>
+                </div>
 
             </div>
 
@@ -62,21 +71,56 @@
         <div id="responses">
             <div id="original-response">
                 <div class="response-menu">
-                    Original
+                    <span class="menu-name">Original</span>
+                    <span id="original-menu-url" class="menu-url none" title=""></span>
+                    <div class="response-menu-buttons">
+                        <span id="original-response-button" class="button" onclick="showOriginalResponse()">Response</span>
+                        <span id="original-raw-request-button" class="button" onclick="showOriginalRawRequest()">Raw Request</span>
+                        <span id="original-raw-response-button" class="button" onclick="showOriginalRawResponse()">Raw Response</span>
+                    </div>
                 </div>
                 <div class="response-content" id="original-response-content">
-                    <!-- <div class="depth-0 json-line"><span class="key">city</span></div>
-                    <div class="depth-1 json-line"><span class="key">code</span><span class="value">goiania</span></div>
-                    <div class="depth-1 json-line"><span class="key">name</span><span class="value">Goiânia</span></div>
-                    <div class="depth-0 json-line"><span class="key">country</span></div>
-                    <div class="depth-1 json-line"><span class="key truncate" title="code_country_country">code_country_country</span><span class="value">BR</span></div>
-                    <div class="depth-1 json-line"><span class="key">name</span><span class="value">Brazil</span></div>
-                    <div class="depth-1 json-line"><span class="key">pt</span><span class="value">Brasil</span></div> -->
+                    <iframe id="original-reponse" class="none" srcdoc='<!doctype html><html lang="en"><head><title>Example Domain</title><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{background:#eee;width:60vw;margin:15vh auto;font-family:system-ui,sans-serif}h1{font-size:1.5em}div{opacity:0.8}a:link,a:visited{color:#348}</style></head><body><div><h1>Example Domain</h1><p>This domain is for use in documentation examples without needing permission. Avoid use in operations.</p><p><a href="https://iana.org/domains/example">Learn more</a></p></div></body></html>'></iframe>
+                    <textarea id="original-raw-request" class="none" readonly spellcheck="false" wrap="off">GET https://example.com/?id=F9517788 HTTP/2.0
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+accept-language: pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3
+accept-encoding: gzip, deflate, br, zstd
+upgrade-insecure-requests: 1
+sec-fetch-dest: document
+sec-fetch-mode: navigate
+sec-fetch-site: none
+sec-fetch-user: ?1
+priority: u=0, i
+pragma: no-cache
+cache-control: no-cache
+te: trailers</textarea>
+                    <textarea id="original-raw-response" class="none" readonly spellcheck="false" wrap="off">HTTP/2.0 200 
+date: Tue, 17 Mar 2026 01:21:54 GMT
+content-type: text/html
+content-encoding: gzip
+last-modified: Mon, 16 Mar 2026 08:51:34 GMT
+allow: GET, HEAD
+age: 2088
+cf-cache-status: HIT
+vary: Accept-Encoding
+server: cloudflare
+cf-ray: 9dd82efe09a9df57-GIG
+
+<!doctype html><html lang="en"><head><title>Example Domain</title><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{background:#eee;width:60vw;margin:15vh auto;font-family:system-ui,sans-serif}h1{font-size:1.5em}div{opacity:0.8}a:link,a:visited{color:#348}</style></head><body><div><h1>Example Domain</h1><p>This domain is for use in documentation examples without needing permission. Avoid use in operations.</p><p><a href="https://iana.org/domains/example">Learn more</a></p></div></body></html></textarea>
                 </div>
             </div>
 
             <div id="replay-response">
-                <div class="response-menu">Replay</div>
+                <div class="response-menu">
+                    <span id="replay-button" class="menu-name">Repetir</span>
+                    <span id="replay-menu-url" class="menu-url none" title=""></span>
+                    <div class="response-menu-buttons">
+                        <span class="button">Response</span>
+                        <span class="button">Raw Request</span>
+                        <span class="button">Raw Response</span>
+                    </div>
+                </div>
                 <div class="response-content" id="replay-response-content">
                 </div>
             </div>

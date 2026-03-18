@@ -103,14 +103,26 @@ async def handle_message(message: str, websocket: websockets.ServerConnection) -
 
         if event == "ping":
             await websocket.send(json.dumps({"type": "pong"}))
-        elif event == "reset_watcher":
+        elif event == "Original/Replay Inputs":
+            print(f"[*] Original/Replay Inputs Event - {data.get("originalInput")} -> {data.get("replayInput")}")
+            start_mitm(data.get("originalInput"), data.get("replayInput"))
+        elif event == "Replay Flow":
+            print(f"[*] Replay Flow Event - {data.get("flow")}")
+            replay_flow(data.get("flow"))
+        elif event == "Reset Monitor":
+            print(f"[*] Reset Monitor")
             monitor.reset()
-            await websocket.send(json.dumps({"type": "status", "msg": "Watcher reset"}))
         else:
-            print(f"Unknown event received: {event}")
+            print(f"[-] Unknown event received: {event}")
             
     except json.JSONDecodeError:
         print("Received invalid JSON")
+
+def start_mitm(originalInput: str, replayInput: str):
+    pass
+
+def replay_flow(flow: str):
+    pass
 
 async def handler(websocket: websockets.ServerConnection) -> None:
     """
