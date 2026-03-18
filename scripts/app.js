@@ -4,7 +4,6 @@ socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     console.log(data);
 
-    data["status"] = "status-a";
     addUrl(data);
 };
 
@@ -65,11 +64,11 @@ function renderJSON(json, elem, depth) {
 
 const storage = new Map();
 
-storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
-storage.set("flow-1", { url: "https://2.bb.com.br", method: "GET", status: "same response", originalRequest: "originalRequest-2", replayRequest: "replayRequest-2", originalResponses: "originalResponses-2", replayResponses: "replayResponses-2", truePositive: false });
-storage.set("flow-2", { url: "https://3.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
-storage.set("flow-3", { url: "https://4.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
-storage.set("flow-4", { url: "https://5.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
+// storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
+// storage.set("flow-1", { url: "https://2.bb.com.br", method: "GET", status: "same response", originalRequest: "originalRequest-2", replayRequest: "replayRequest-2", originalResponses: "originalResponses-2", replayResponses: "replayResponses-2", truePositive: false });
+// storage.set("flow-2", { url: "https://3.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
+// storage.set("flow-3", { url: "https://4.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
+// storage.set("flow-4", { url: "https://5.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
 
 let selectedUrl = "";
 let selectedSidebarMenu = "not-replayed";
@@ -87,7 +86,7 @@ function selectNotReplayed() {
     differentResponsesElem.classList.remove("selected");
 
     // Render the urls
-    renderNotReplayedUrls();
+    renderUrls();
 }
 
 function selectSameResponse() {
@@ -104,7 +103,7 @@ function selectSameResponse() {
     differentResponsesElem.classList.remove("selected");
 
     // Render the urls
-    renderSameResponseUrls();
+    renderUrls();
 }
 
 function selectDifferentResponses() {
@@ -121,9 +120,19 @@ function selectDifferentResponses() {
     differentResponsesElem.classList.add("selected");
 
     // Render the urls
-    renderDifferentResponsesUrls();
+    renderUrls();
 }
 selectNotReplayed();
+
+function renderUrls() {
+    if (selectedSidebarMenu == "not-replayed") {
+        renderNotReplayedUrls();
+    } else if (selectedSidebarMenu == "same-response") {
+        renderSameResponseUrls();
+    } else if (selectedSidebarMenu == "different-responses") {
+        renderDifferentResponsesUrls();
+    }
+}
 
 function renderNotReplayedUrls() {
     const urlsElem = document.getElementById("urls");
@@ -234,42 +243,24 @@ function toggleFalsePositive(url) {
     storage.get(url).truePositive = !storage.get(url).truePositive;
 }
 
+storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
+
 function addUrl(flowData) {
-    // flowData["flow-name"] is a natural id
-    const id = flowData["flow-name"];
-    
-    // Save the requests and responses
-    storage.originalRequests[id] = flowData["original-request"];
-    storage.replayRequests[id] = flowData["replay-request"];
-    storage.originalResponses[id] = flowData["original-response"];
-    storage.replayResponses[id] = "";
-    storage.urls[id] = flowData["url"];
-    storage.replayed[id] = flowData["status"] === "replayed";
+    const data = {
+        url: flowData["url"],
+        method: flowData["method"],
+        status: flowData["status"],
+        originalRequest: flowData["original-request"],
+        originalResponse: flowData["original-response"],
+        replayRequest: flowData["replay-request"],
+        replayResponse: "",
+        truePositive: false,
+    }
 
-    // Variable to create the url element
-    const url = flowData["url"];
-    const method = flowData["method"];
-    const status = flowData["status"];
+    const flow = flowData["flow-name"];
+    storage.set(flow, data);
 
-    // Create the container
-    const container = document.createElement('div');
-    container.className = `url ${status}`;
-    container.id = id;
-    container.setAttribute('onclick', `selectUrl('${id}')`);
-
-    // Remove http or https for a clean url show
-    const clean_url = url.replace(/^https?:\/\//, '');
-
-    // Inject the inner HTML
-    container.innerHTML = `
-        <span class="status-button" onclick='toggleStatus("${id}", "${status}")'></span>
-        <span class="http-verb http-${method.toLowerCase()}">${method}</span>
-        <span class="url-text truncate" title="${url}">${clean_url}</span>
-    `;
-
-    // Append the container
-    const urls = document.getElementById("urls");
-    urls.appendChild(container);
+    renderUrls();
 }
 
 function selectUrl(url) {
@@ -277,7 +268,31 @@ function selectUrl(url) {
     selectedUrl = url;
     document.getElementById(selectedUrl).classList.add("selected-url");
 
+    // Content change
+    const originalResponseElem = document.getElementById("original-response-iframe");
+    const originalRawRequestElem = document.getElementById("original-raw-request");
+    const originalRawResponseElem = document.getElementById("original-raw-response");
+    const replayResponseElem = document.getElementById("replay-response-iframe");
+    const replayRawRequestElem = document.getElementById("replay-raw-request");
+    const replayRawResponseElem = document.getElementById("replay-raw-response");
+    
+    const originalResponse = storage.get(selectedUrl)["originalResponse"].split("\r\n\r\n")[1];
+    const originalRawRequest = storage.get(selectedUrl)["originalRequest"];
+    const originalRawResponse = storage.get(selectedUrl)["originalResponse"];
+    const replayResponse = "TEMP - ISTO É UMA PÁGINA HTLM";
+    const replayRawRequest = storage.get(selectedUrl)["replayRequest"];
+    const replayRawResponse = "TEMP - ISTO É UMA RAW RESPONSE";
+
+    originalResponseElem.srcdoc = originalResponse;
+    originalRawRequestElem.value = originalRawRequest;
+    originalRawResponseElem.value = originalRawResponse;
+    replayResponseElem.srcdoc = replayResponse;
+    replayRawRequestElem.value = replayRawRequest;
+    replayRawResponseElem.value = replayRawResponse;
+
     renderResponsesMenus(url);
+    showOriginalResponse();
+    showReplayResponse();
 }
 
 function renderResponsesMenus(url) {
@@ -332,7 +347,7 @@ function showOriginalResponse() {
     const originalRawResponseButtonElem = document.getElementById("original-raw-response-button");
     
     // Content
-    const originalResponseElem = document.getElementById("original-reponse");
+    const originalResponseElem = document.getElementById("original-response-iframe");
     const originalRawRequestElem = document.getElementById("original-raw-request");
     const originalRawResponseElem = document.getElementById("original-raw-response");
     
@@ -352,7 +367,7 @@ function showOriginalRawRequest() {
     const originalRawResponseButtonElem = document.getElementById("original-raw-response-button");
 
     // Content
-    const originalResponseElem = document.getElementById("original-reponse");
+    const originalResponseElem = document.getElementById("original-response-iframe");
     const originalRawRequestElem = document.getElementById("original-raw-request");
     const originalRawResponseElem = document.getElementById("original-raw-response");
 
@@ -372,7 +387,7 @@ function showOriginalRawResponse() {
     const originalRawResponseButtonElem = document.getElementById("original-raw-response-button");
 
     // Content
-    const originalResponseElem = document.getElementById("original-reponse");
+    const originalResponseElem = document.getElementById("original-response-iframe");
     const originalRawRequestElem = document.getElementById("original-raw-request");
     const originalRawResponseElem = document.getElementById("original-raw-response");
 
@@ -383,6 +398,66 @@ function showOriginalRawResponse() {
     originalResponseElem.classList.add("none");
     originalRawRequestElem.classList.add("none");
     originalRawResponseElem.classList.remove("none");
+}
+
+function showReplayResponse() {
+    // Buttons
+    const replayResponseButtonElem = document.getElementById("replay-response-button");
+    const replayRawRequestButtonElem = document.getElementById("replay-raw-request-button");
+    const replayRawResponseButtonElem = document.getElementById("replay-raw-response-button");
+    
+    // Content
+    const replayResponseElem = document.getElementById("replay-response-iframe");
+    const replayRawRequestElem = document.getElementById("replay-raw-request");
+    const replayRawResponseElem = document.getElementById("replay-raw-response");
+    
+    replayResponseButtonElem.classList.add("selected-button");
+    replayRawRequestButtonElem.classList.remove("selected-button");
+    replayRawResponseButtonElem.classList.remove("selected-button");
+
+    replayResponseElem.classList.remove("none");
+    replayRawRequestElem.classList.add("none");
+    replayRawResponseElem.classList.add("none");
+}
+
+function showReplayRawRequest() {
+    // Buttons
+    const replayResponseButtonElem = document.getElementById("replay-response-button");
+    const replayRawRequestButtonElem = document.getElementById("replay-raw-request-button");
+    const replayRawResponseButtonElem = document.getElementById("replay-raw-response-button");
+
+    // Content
+    const replayResponseElem = document.getElementById("replay-response-iframe");
+    const replayRawRequestElem = document.getElementById("replay-raw-request");
+    const replayRawResponseElem = document.getElementById("replay-raw-response");
+
+    replayResponseButtonElem.classList.remove("selected-button");
+    replayRawRequestButtonElem.classList.add("selected-button");
+    replayRawResponseButtonElem.classList.remove("selected-button");
+
+    replayResponseElem.classList.add("none");
+    replayRawRequestElem.classList.remove("none");
+    replayRawResponseElem.classList.add("none");
+}
+
+function showReplayRawResponse() {
+    // Buttons
+    const replayResponseButtonElem = document.getElementById("replay-response-button");
+    const replayRawRequestButtonElem = document.getElementById("replay-raw-request-button");
+    const replayRawResponseButtonElem = document.getElementById("replay-raw-response-button");
+
+    // Content
+    const replayResponseElem = document.getElementById("replay-response-iframe");
+    const replayRawRequestElem = document.getElementById("replay-raw-request");
+    const replayRawResponseElem = document.getElementById("replay-raw-response");
+
+    replayResponseButtonElem.classList.remove("selected-button");
+    replayRawRequestButtonElem.classList.remove("selected-button");
+    replayRawResponseButtonElem.classList.add("selected-button");
+
+    replayResponseElem.classList.add("none");
+    replayRawRequestElem.classList.add("none");
+    replayRawResponseElem.classList.remove("none");
 }
 
 function toggleStatus(url, status) {

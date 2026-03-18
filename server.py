@@ -119,7 +119,7 @@ async def handle_message(message: str, websocket: websockets.ServerConnection) -
         print("Received invalid JSON")
 
 def start_mitm(originalInput: str, replayInput: str):
-    pass
+    os.system(f"start cmd /K mitmproxy.exe -s bola.py --ssl-insecure --set originalInput={originalInput} --set replayInput={replayInput}")
 
 def replay_flow(flow: str):
     pass
