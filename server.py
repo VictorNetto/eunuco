@@ -6,6 +6,7 @@ import os
 from typing import Dict, Any, List
 
 from watcher import Watcher
+from raw_request import send_request, save_response, compare_responses
 
 monitor = Watcher()
 
@@ -71,6 +72,7 @@ async def process_new_flow(dir_name: str, websocket: websockets.ServerConnection
                 await asyncio.sleep(1)
         
         if metadata:
+            metadata["event"] = "New Flow"
             metadata["flow-name"] = dir_name
             metadata["original-request"] = read_file(original_request_path)
             metadata["replay-request"] = read_file(replay_request_path)
@@ -104,11 +106,11 @@ async def handle_message(message: str, websocket: websockets.ServerConnection) -
         if event == "ping":
             await websocket.send(json.dumps({"type": "pong"}))
         elif event == "Original/Replay Inputs":
-            print(f"[*] Original/Replay Inputs Event - {data.get("originalInput")} -> {data.get("replayInput")}")
+            print(f"[*] Original/Replay Inputs Event - {data.get("orreplay_response.rawiginalInput")} -> {data.get("replayInput")}")
             start_mitm(data.get("originalInput"), data.get("replayInput"))
         elif event == "Replay Flow":
             print(f"[*] Replay Flow Event - {data.get("flow")}")
-            replay_flow(data.get("flow"))
+            await replay_flow(data.get("flow"), websocket)
         elif event == "Reset Monitor":
             print(f"[*] Reset Monitor")
             monitor.reset()
@@ -121,8 +123,16 @@ async def handle_message(message: str, websocket: websockets.ServerConnection) -
 def start_mitm(originalInput: str, replayInput: str):
     os.system(f"start cmd /K mitmproxy.exe -s bola.py --ssl-insecure --set originalInput={originalInput} --set replayInput={replayInput}")
 
-def replay_flow(flow: str):
-    pass
+async def replay_flow(flow: str, websocket: websockets.ServerConnection):
+    res = send_request(f"flows/{flow}", "replay_request.raw")
+    save_response(f"flows/{flow}", "replay_response.raw", res)
+    metadata = { "event": "Replay Flow Response", "flow-name": flow }
+    metadata["replay-response"] = read_file(f"flows/{flow}/replay_response.raw")
+    if compare_responses(f"flows/{flow}", "original_response.raw", "replay_response.raw"):
+        metadata["status"] = "same response"
+    else:
+        metadata["status"] = "different responses"
+    await websocket.send(json.dumps(metadata))
 
 async def handler(websocket: websockets.ServerConnection) -> None:
     """

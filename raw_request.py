@@ -1,6 +1,6 @@
 import httpx
 from pathlib import Path
-import io
+
 
 def parse_raw_request(raw_bytes: bytes):
     """
@@ -90,6 +90,19 @@ def save_response(flow_dir: str, response_file: str, response: httpx.Response):
             f.write(f"{k}: {v}\r\n".encode())
         f.write(b"\r\n")
         f.write(response.content)
+
+def compare_responses(flow_dir: str, response_1_file: str, response_2_file: str):
+    dir_path = Path(flow_dir)
+    res1_path = dir_path / response_1_file
+    res2_path = dir_path / response_2_file
+
+    parts_tmp = res1_path.read_bytes().split(b"\r\n\r\n", 1)
+    res1_body = parts_tmp[1] if len(parts_tmp) > 0 else b""
+
+    parts_tmp = res2_path.read_bytes().split(b"\r\n\r\n", 1)
+    res2_body = parts_tmp[1] if len(parts_tmp) > 0 else b""
+
+    return res1_body == res2_body
 
 if __name__ == "__main__":
     show_raw_request("flows/flow-0", "original_request.raw")

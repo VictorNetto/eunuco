@@ -200,7 +200,9 @@ input {
     align-items: center;
     gap: 5px;
 
-    padding: 8px 5px;
+    position: relative;
+
+    padding: 10px 5px 6px;
     margin: 0 0 3px 15px;
 
     font-family: 'Courier New', Courier, monospace;
@@ -215,6 +217,31 @@ input {
 
 .url:hover {
     background-color: var(--theme-color-4);
+}
+
+.rapid-replay-button {
+    display: none;
+}
+
+.url.status-a.selected-url .rapid-replay-button {
+    display: block;
+    position: absolute;
+
+    top: -8px;
+    right: -1px;
+    padding: 0 5px;
+
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    color: var(--status-a-2);
+    background-color: var(--status-a-1);
+    border: 1px dashed var(--status-a-2);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+
+    cursor: pointer;
 }
 
 .status-a {

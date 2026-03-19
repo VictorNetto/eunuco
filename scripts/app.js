@@ -2,9 +2,22 @@ const socket = new WebSocket('ws://localhost:8765');
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
 
-    addUrl(data);
+    if (data["event"] == "New Flow") {
+        addUrl(data);
+    } else if (data["event"] == "Replay Flow Response") {
+        const flow = data["flow-name"];
+        const replayResponse = data["replay-response"];
+        const status = data["status"];
+
+        const ref = storage.get(flow);
+        ref["replayResponse"] = replayResponse;
+        ref["status"] = status;
+        ref["truePositive"] = status == "different responses" ? true : false;
+        
+        renderUrls();
+        selectUrl(selectedUrl);
+    }
 };
 
 function toggleModal() {
@@ -64,11 +77,11 @@ function renderJSON(json, elem, depth) {
 
 const storage = new Map();
 
-// storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
-// storage.set("flow-1", { url: "https://2.bb.com.br", method: "GET", status: "same response", originalRequest: "originalRequest-2", replayRequest: "replayRequest-2", originalResponses: "originalResponses-2", replayResponses: "replayResponses-2", truePositive: false });
-// storage.set("flow-2", { url: "https://3.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
-// storage.set("flow-3", { url: "https://4.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponses: "originalResponses-3", replayResponses: "replayResponses-3", truePositive: true });
-// storage.set("flow-4", { url: "https://5.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
+// storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponse: "originalResponses-1", replayResponse: "", truePositive: false });
+// storage.set("flow-1", { url: "https://2.bb.com.br", method: "GET", status: "same response", originalRequest: "originalRequest-2", replayRequest: "replayRequest-2", originalResponse: "originalResponses-2", replayResponse: "replayResponses-2", truePositive: false });
+// storage.set("flow-2", { url: "https://3.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponse: "originalResponses-3", replayResponse: "replayResponses-3", truePositive: true });
+// storage.set("flow-3", { url: "https://4.bb.com.br", method: "GET", status: "different responses", originalRequest: "originalRequest-3", replayRequest: "replayRequest-3", originalResponse: "originalResponses-3", replayResponse: "replayResponses-3", truePositive: true });
+// storage.set("flow-4", { url: "https://5.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponse: "originalResponses-1", replayResponse: "", truePositive: false });
 
 let selectedUrl = "";
 let selectedSidebarMenu = "not-replayed";
@@ -158,6 +171,7 @@ function renderNotReplayedUrls() {
 
         // Inject the inner HTML
         containerElem.innerHTML = `
+            <span class="rapid-replay-button" onclick=replayRequest('${key}')>Repetir</span>
             <input type="checkbox" class="true-positive-check" disabled>
             <span class="http-verb http-${method.toLowerCase()}">${method}</span>
             <span class="url-text truncate" title="${url}">${cleanUrl}</span>
@@ -243,8 +257,6 @@ function toggleFalsePositive(url) {
     storage.get(url).truePositive = !storage.get(url).truePositive;
 }
 
-storage.set("flow-0", { url: "https://1.bb.com.br", method: "GET", status: "not replayed", originalRequest: "originalRequest-1", replayRequest: "replayRequest-1", originalResponses: "originalResponses-1", replayResponses: "", truePositive: false });
-
 function addUrl(flowData) {
     const data = {
         url: flowData["url"],
@@ -279,9 +291,9 @@ function selectUrl(url) {
     const originalResponse = storage.get(selectedUrl)["originalResponse"].split("\r\n\r\n")[1];
     const originalRawRequest = storage.get(selectedUrl)["originalRequest"];
     const originalRawResponse = storage.get(selectedUrl)["originalResponse"];
-    const replayResponse = "TEMP - ISTO É UMA PÁGINA HTLM";
+    const replayResponse = storage.get(selectedUrl)["replayResponse"].split("\r\n\r\n")[1];
     const replayRawRequest = storage.get(selectedUrl)["replayRequest"];
-    const replayRawResponse = "TEMP - ISTO É UMA RAW RESPONSE";
+    const replayRawResponse = storage.get(selectedUrl)["replayResponse"];
 
     originalResponseElem.srcdoc = originalResponse;
     originalRawRequestElem.value = originalRawRequest;
